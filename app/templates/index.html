@@ -1,0 +1,98 @@
+<html>
+
+    <head>
+
+    </head>
+
+    <body>
+
+        <table width="100%" border="0">
+            <tr>
+                <td colspan="3">File: {{file_path}}</td>
+            </tr>
+            <tr>
+                <td width="10%"><div style="padding:2px;margin:2px">Key</div></td>
+                <td width="45%"><div style="padding:2px;margin:2px">Original</div></td>
+                <td width="45%"><div style="padding:2px;margin:2px">Translation</div></td>
+            </tr>
+            {% for segment in segments %}
+            <tr>
+                <td width="10%"><div style="padding:2px;margin:2px">{{segment.key}}</div></td>
+                <td width="45%"><div style="padding:2px;margin:2px">{{segment.original}}</div> </td>
+                <td width="45%"><div style="padding:2px;margin:2px" onclick="OnClick(this)">{{segment.translation}}</div> </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+        <script>
+            var tx = document.getElementsByTagName('textarea');
+
+            var activeCell = null;
+
+            for (var i = 0; i < tx.length; i++) {
+                InitTextarea(tx[i]);
+              <!--tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;');-->
+              <!--tx[i].addEventListener("input", OnInput, false);-->
+            }
+
+            function InitTextarea(ta) {
+                ta.setAttribute('style', 'height:' + (ta.scrollHeight) + 'px;overflow-y:hidden;');
+                ta.addEventListener("input", OnInput, false);
+            }
+
+            function OnInput() {
+              this.style.height = 'auto';
+              this.style.height = (this.scrollHeight) + 'px';
+            }
+
+            function OnClick(e) {
+
+                if (activeCell != null) {
+                    ResetCell(activeCell);
+                }
+                var p = e.parentNode;
+                e.style.display = "none";
+                var ta = document.createElement('textarea');
+
+                ta.value = e.innerHTML;
+                ta.cols = 60;
+
+                p.appendChild(ta);
+                ta.focus();
+
+                activeCell = p;
+            }
+
+            function ResetCell(e) {
+                var ta = e.getElementsByTagName("textarea")[0];
+                var div = e.getElementsByTagName("div")[0];
+
+                var k = e.parentElement.getElementsByTagName("td")[0].getElementsByTagName("div")[0].innerText;
+                var v = ta.value;
+
+                div.innerHTML = ta.value;
+                e.removeChild(ta);
+                div.style.display = "block";
+
+                ReportChange(k, v);
+            }
+
+            function ReportChange(k, v) {
+                var request = new XMLHttpRequest();
+                request.onload = function() {
+                    console.log("Request for " + k + ":" + v + "");
+                    console.log("Status: " + request.status);
+                    console.log("Response:" + request.responseText);
+                }
+                request.open("POST", "http://127.0.0.1:5000/report", true);
+                request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                var body = JSON.stringify({ "key": k, "translation": v })
+                request.send(body)
+            }
+
+        </script>
+
+    </body>
+
+</html>
