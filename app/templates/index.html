@@ -106,13 +106,16 @@
                 var div = e.getElementsByTagName("div")[0];
 
                 var k = e.parentElement.getElementsByTagName("td")[0].getElementsByTagName("div")[0].innerText;
-                var v = ta.value;
+                var s = e.parentElement.getElementsByTagName("td")[1].getElementsByTagName("div")[0].innerText
+                var t = ta.value;
 
                 div.innerHTML = ta.value;
                 e.removeChild(ta);
                 div.style.display = "block";
 
-                ReportChange(k, v);
+                if (s != t) {
+                    ReportChange(k, t);
+                }
 
                 OnRowRender(div.parentNode.parentNode);
             }
