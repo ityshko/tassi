@@ -1,0 +1,16 @@
+{
+  "CONFIG": {
+    "i18n_path": "/Users/irynatyshko/doctoright/doctoright/ui/src/i18n",
+    "source": {
+      "lang": "ru"
+    },
+    "target": {
+      "ua": {
+        "whitelist": "whitelist/whitelist_ua.json"
+      },
+      "en": {
+        "whitelist": "whitelist/whitelist_en.json"
+      }
+    }
+  }
+}

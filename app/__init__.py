@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 app = Flask(__name__)
-app.config.from_pyfile("config.py", silent=False)
+app.config.from_json("config.json", silent=False)
 
 # def create_app():
 #   # create and configure app

@@ -9,20 +9,18 @@
         <style>
             .new_segment{background-color: #66cdaa;}
             .old_segment{background-color: white;}
+            .whitelist{background-color: #dddddd;}
             .key{font-size: 12px;}
         </style>
 
         <table width="100%" border="0">
-            <tr>
-                <td colspan="3">File: {{file_path}}</td>
-            </tr>
             <tr>
                 <td width="10%"><div style="padding:2px;margin:2px">Key</div></td>
                 <td width="45%"><div style="padding:2px;margin:2px">Original</div></td>
                 <td width="45%"><div style="padding:2px;margin:2px">Translation</div></td>
             </tr>
             {% for segment in segments %}
-            <tr segment="true">
+            <tr segment="true" {% if segment.in_whitelist %}whitelist="True" {% endif %}>
                 <td width="10%" class="key">
                     <div style="padding:2px;margin:2px"
                          id="{{segment.key}}">{{segment.key}}</div>
@@ -69,7 +67,10 @@
                 var source = cells[1].getElementsByTagName("div")[0].innerHTML;
                 var transl = cells[2].getElementsByTagName("div")[0].innerHTML;
                 <!--cell is New-->
-                if (source == transl) {
+                if (row.hasAttribute("whitelist")) {
+                    row.className = "whitelist";
+                }
+                else if (source == transl) {
                     row.className = "new_segment";
                 }
                 <!--cell is Translated-->

@@ -17,3 +17,4 @@ class SourceFile:
   def save(self):
     with open(self.path, "w", encoding='utf-8') as f:
       json.dump(self.content, f, indent=2, ensure_ascii=False)
+
