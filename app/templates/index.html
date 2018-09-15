@@ -6,6 +6,12 @@
 
     <body onload="OnPageRender()">
 
+        <style>
+            .new_segment{background-color: #66cdaa;}
+            .old_segment{background-color: white;}
+            .key{font-size: 12px;}
+        </style>
+
         <table width="100%" border="0">
             <tr>
                 <td colspan="3">File: {{file_path}}</td>
@@ -17,7 +23,7 @@
             </tr>
             {% for segment in segments %}
             <tr segment="true">
-                <td width="10%">
+                <td width="10%" class="key">
                     <div style="padding:2px;margin:2px"
                          id="{{segment.key}}">{{segment.key}}</div>
                 </td>
@@ -34,11 +40,6 @@
             {% endfor %}
 
         </table>
-
-        <style>
-            .new_segment{background-color: #66cdaa;}
-            .old_segment{background-color: white;}
-        </style>
 
         <script>
             var tx = document.getElementsByTagName('textarea');
