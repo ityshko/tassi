@@ -4,7 +4,7 @@
 
     </head>
 
-    <body>
+    <body onload="OnPageRender()">
 
         <table width="100%" border="0">
             <tr>
@@ -16,14 +16,29 @@
                 <td width="45%"><div style="padding:2px;margin:2px">Translation</div></td>
             </tr>
             {% for segment in segments %}
-            <tr>
-                <td width="10%"><div style="padding:2px;margin:2px">{{segment.key}}</div></td>
-                <td width="45%"><div style="padding:2px;margin:2px">{{segment.original}}</div> </td>
-                <td width="45%"><div style="padding:2px;margin:2px" onclick="OnClick(this)">{{segment.translation}}</div> </td>
+            <tr segment="true">
+                <td width="10%">
+                    <div style="padding:2px;margin:2px"
+                         id="{{segment.key}}">{{segment.key}}</div>
+                </td>
+                <td width="45%">
+                    <div style="padding:2px;margin:2px"
+                         id="{{segment.key}}.s">{{segment.original}}</div>
+                </td>
+                <td width="45%">
+                    <div style="padding:2px;margin:2px"
+                         onclick="OnClick(this)"
+                         id="{{segment.key}}.t">{{segment.translation}}</div>
+                </td>
             </tr>
             {% endfor %}
 
         </table>
+
+        <style>
+            .new_segment{background-color: #66cdaa;}
+            .old_segment{background-color: white;}
+        </style>
 
         <script>
             var tx = document.getElementsByTagName('textarea');
@@ -32,13 +47,34 @@
 
             for (var i = 0; i < tx.length; i++) {
                 InitTextarea(tx[i]);
-              <!--tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;');-->
-              <!--tx[i].addEventListener("input", OnInput, false);-->
             }
 
             function InitTextarea(ta) {
                 ta.setAttribute('style', 'height:' + (ta.scrollHeight) + 'px;overflow-y:hidden;');
                 ta.addEventListener("input", OnInput, false);
+            }
+
+            function OnPageRender() {
+                var rows = document.getElementsByTagName('tr');
+                for (var i = 1; i < rows.length; i++) {
+                    if (rows[i].hasAttribute("segment")) {
+                        OnRowRender(rows[i]);
+                    }
+                }
+            }
+
+            function OnRowRender(row) {
+                var cells = row.getElementsByTagName("td");
+                var source = cells[1].getElementsByTagName("div")[0].innerHTML;
+                var transl = cells[2].getElementsByTagName("div")[0].innerHTML;
+                <!--cell is New-->
+                if (source == transl) {
+                    row.className = "new_segment";
+                }
+                <!--cell is Translated-->
+                else {
+                    row.className = "old_segment";
+                }
             }
 
             function OnInput() {
@@ -76,6 +112,8 @@
                 div.style.display = "block";
 
                 ReportChange(k, v);
+
+                OnRowRender(div.parentNode.parentNode);
             }
 
             function ReportChange(k, v) {
