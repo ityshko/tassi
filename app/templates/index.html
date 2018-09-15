@@ -128,13 +128,33 @@
                     console.log("Status: " + request.status);
                     console.log("Response:" + request.responseText);
                 }
+                request.onreadystatechange = function() {
+                    if (request.readyState == XMLHttpRequest.DONE) {
+                        if (request.status != 200) {
+                            alert(request.statusText);
+                        }
+                    }
+                }
                 request.open("POST", "http://127.0.0.1:5000/report", true);
                 request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                 var body = JSON.stringify({ "key": k, "translation": v })
                 request.send(body)
             }
 
+            function onKeyUpListener(e) {
+                var keyCode = e.which;
+                if ((keyCode == 27) && activeCell) {
+                    ResetCell(activeCell);
+                    activeCell = null;
+                }
+            }
+
         </script>
+
+        <script>
+            window.addEventListener("keyup", onKeyUpListener, false);
+        </script>
+
 
     </body>
 
