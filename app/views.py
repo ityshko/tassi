@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, request
 import json
 from collections import OrderedDict
+from .utils import SourceFile
 
 
 @app.route('/')
@@ -31,4 +32,8 @@ def index():
 @app.route("/report", methods=["POST"])
 def change():
   content = request.json
+  sf = SourceFile(app.config.get("FILE_TRANS"), "UA")
+  sf.update_key(content["key"], content["translation"])
+  sf.save()
+
   return "OK"
