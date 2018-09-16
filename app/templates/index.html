@@ -11,41 +11,32 @@
             .old_segment{background-color: white;}
             .whitelist{background-color: #dddddd;}
             .key{font-size: 12px;}
+            .header{padding:10px; font-weight:bold;}
+            .cell{padding:10px;}
         </style>
 
-        <table width="100%" border="0">
+        <table width="100%" border="1">
             <tr>
-                <td width="10%"><div style="padding:2px;margin:2px">Key</div></td>
-                <td width="45%"><div style="padding:2px;margin:2px">Original</div></td>
-                <td width="45%"><div style="padding:2px;margin:2px">Translation</div></td>
+                <td width="10%" class="header">Key</td>
+                <td width="45%" class="header">Original</td>
+                <td width="45%" class="header">Translation</td>
             </tr>
             {% for segment in segments %}
             <tr segment="true" {% if segment.in_whitelist %}whitelist="True" {% endif %}>
-                <td width="10%" class="key">
-                    <div style="padding:2px;margin:2px"
-                         id="{{segment.key}}">{{segment.key}}</div>
-                </td>
-                <td width="45%">
-                    <div style="padding:2px;margin:2px"
-                         id="{{segment.key}}.s">{{segment.original}}</div>
-                </td>
-                <td width="45%">
-                    <div style="padding:2px;margin:2px"
-                         onclick="OnClick(this)"
-                         id="{{segment.key}}.t">{{segment.translation}}</div>
-                </td>
+                <td width="10%" class="key">{{segment.key}}</td>
+                <td width="45%" class="cell">{{segment.original}}</td>
+                <td width="45%" class="cell" onclick="OnCellClick(this)">{{segment.translation}}</td>
             </tr>
             {% endfor %}
 
         </table>
 
         <script>
-            var tx = document.getElementsByTagName('textarea');
-
             var activeCell = null;
 
-            for (var i = 0; i < tx.length; i++) {
-                InitTextarea(tx[i]);
+            var tds = document.getElementsByTagName('td');
+            for (var i = 0; i < tds.length; i++) {
+                tds[i].innerHTML = tds[i].innerHTML.replace(/\n\n/g, '<br>')
             }
 
             function InitTextarea(ta) {
@@ -64,8 +55,8 @@
 
             function OnRowRender(row) {
                 var cells = row.getElementsByTagName("td");
-                var source = cells[1].getElementsByTagName("div")[0].innerHTML;
-                var transl = cells[2].getElementsByTagName("div")[0].innerHTML;
+                var source = cells[1].innerHTML;
+                var transl = cells[2].innerHTML;
                 <!--cell is New-->
                 if (row.hasAttribute("whitelist")) {
                     row.className = "whitelist";
@@ -84,41 +75,46 @@
               this.style.height = (this.scrollHeight) + 'px';
             }
 
-            function OnClick(e) {
+            function OnCellClick(cell) {
 
-                if (activeCell != null) {
+                if (activeCell == cell) {
+                    return;
+                }
+                else if (activeCell != null) {
                     ResetCell(activeCell);
                 }
-                var p = e.parentNode;
-                e.style.display = "none";
-                var ta = document.createElement('textarea');
+                var content = cell.innerHTML;
+                while (cell.firstChild)
+                    cell.removeChild(cell.firstChild);
 
-                ta.value = e.innerHTML;
+                var ta = document.createElement('textarea');
+                <!--var p = e.parentNode;-->
+                <!--cell.style.display = "none";-->
+
+                ta.value = content.replace(/<br>/g, '\n');
                 ta.cols = 60;
 
-                p.appendChild(ta);
+                cell.appendChild(ta);
+                InitTextarea(ta);
+
                 ta.focus();
 
-                activeCell = p;
+                activeCell = cell;
             }
 
             function ResetCell(e) {
                 var ta = e.getElementsByTagName("textarea")[0];
-                var div = e.getElementsByTagName("div")[0];
 
-                var k = e.parentElement.getElementsByTagName("td")[0].getElementsByTagName("div")[0].innerText;
-                var s = e.parentElement.getElementsByTagName("td")[1].getElementsByTagName("div")[0].innerText
+                var k = e.parentElement.getElementsByTagName("td")[0].innerText;
+                var s = e.parentElement.getElementsByTagName("td")[1].innerText
                 var t = ta.value;
 
-                div.innerHTML = ta.value;
                 e.removeChild(ta);
-                div.style.display = "block";
 
-                if (s != t) {
-                    ReportChange(k, t);
-                }
+                ReportChange(k, t.replace(/\n/g, '\n\n'));
+                e.innerHTML = t.replace(/\n/g, '<br>');
 
-                OnRowRender(div.parentNode.parentNode);
+                OnRowRender(e.parentNode);
             }
 
             function ReportChange(k, v) {
