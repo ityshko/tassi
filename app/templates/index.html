@@ -12,20 +12,21 @@
             .whitelist{background-color: #dddddd;}
             .key{font-size: 12px;}
             .header{padding:10px; font-weight:bold;}
-            .cell{padding:10px;}
+            .cell{padding:10px; vertical-align:top; word-wrap:break-word;}
+            .edited_text{font-size: 12px;}
         </style>
 
-        <table width="100%" border="1">
+        <table width="100%" border="1" style="table-layout: fixed; border-collapse:collapse;">
             <tr>
-                <td width="10%" class="header">Key</td>
-                <td width="45%" class="header">Original</td>
-                <td width="45%" class="header">Translation</td>
+                <td width="20%" class="header">Key</td>
+                <td width="35%" class="header">Original</td>
+                <td width="35%" class="header">Translation</td>
             </tr>
             {% for segment in segments %}
             <tr segment="true" {% if segment.in_whitelist %}whitelist="True" {% endif %}>
-                <td width="10%" class="key">{{segment.key}}</td>
-                <td width="45%" class="cell">{{segment.original}}</td>
-                <td width="45%" class="cell" onclick="OnCellClick(this)">{{segment.translation}}</td>
+                <td width="20%" class="key">{{segment.key}}</td>
+                <td width="35%" class="cell" {% if not segment.in_whitelist %}onclick="OnCellClick(this)"{% endif %} lang="ru">{{segment.original}}</td>
+                <td width="35%" class="cell" {% if not segment.in_whitelist %}onclick="OnCellClick(this)"{% endif %} lang="ua">{{segment.translation}}</td>
             </tr>
             {% endfor %}
 
@@ -88,6 +89,7 @@
                     cell.removeChild(cell.firstChild);
 
                 var ta = document.createElement('textarea');
+                ta.className = "edited_text";
                 <!--var p = e.parentNode;-->
                 <!--cell.style.display = "none";-->
 
@@ -102,22 +104,22 @@
                 activeCell = cell;
             }
 
-            function ResetCell(e) {
-                var ta = e.getElementsByTagName("textarea")[0];
+            function ResetCell(cell) {
+                var ta = cell.getElementsByTagName("textarea")[0];
 
-                var k = e.parentElement.getElementsByTagName("td")[0].innerText;
-                var s = e.parentElement.getElementsByTagName("td")[1].innerText
+                var lang = cell.getAttribute("lang");
+                var k = cell.parentElement.getElementsByTagName("td")[0].innerText;
                 var t = ta.value;
 
-                e.removeChild(ta);
+                cell.removeChild(ta);
 
-                ReportChange(k, t.replace(/\n/g, '\n\n'));
-                e.innerHTML = t.replace(/\n/g, '<br>');
+                ReportChange(lang, k, t.replace(/\n/g, '\n\n'));
+                cell.innerHTML = t.replace(/\n/g, '<br>');
 
-                OnRowRender(e.parentNode);
+                OnRowRender(cell.parentNode);
             }
 
-            function ReportChange(k, v) {
+            function ReportChange(lang, k, v) {
                 var request = new XMLHttpRequest();
                 request.onload = function() {
                     console.log("Request for " + k + ":" + v + "");
@@ -133,7 +135,7 @@
                 }
                 request.open("POST", "http://127.0.0.1:5000/report", true);
                 request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                var body = JSON.stringify({ "key": k, "translation": v })
+                var body = JSON.stringify({ "lang": lang, "key": k, "translation": v })
                 request.send(body)
             }
 

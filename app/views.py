@@ -60,14 +60,15 @@ def change():
   sf = SourceFile(
     path.join(
       app.config.get("CONFIG")["i18n_path"],
-      "ua.json"
+      content["lang"].lower() + ".json"
     ),
-    "UA"
+    content["lang"]
   )
   sf.update_key(content["key"], content["translation"])
   sf.save()
 
-  print("Saved new value: \"{key}\": \"{value}\"".format(
+  print("Updated {lang}: \"{key}\": \"{value}\"".format( # use content["lang"]
+    lang=content["lang"],
     key=content["key"],
     value=content["translation"].replace('\n', '\\n')))
 
