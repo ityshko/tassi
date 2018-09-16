@@ -67,6 +67,8 @@ def change():
   sf.update_key(content["key"], content["translation"])
   sf.save()
 
-  print("Saved new value:\n\t{key}\n\t{value}".format(key=content["key"], value=content["translation"]))
+  print("Saved new value: \"{key}\": \"{value}\"".format(
+    key=content["key"],
+    value=content["translation"].replace('\n', '\\n')))
 
   return "OK"
